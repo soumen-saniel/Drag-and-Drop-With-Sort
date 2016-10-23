@@ -1,0 +1,192 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Untitled Document</title>
+    <style>
+        /* Prevent the text contents of draggable elements from being selectable. */
+        
+        [draggable] {
+            user-select: none;
+        }
+        
+        body {
+            background-color: #fff;
+            color: #303;
+            font-family: sans-serif;
+            text-align: center;
+        }
+        
+        li {
+            width: 170px;
+            position: absolute;
+            /*float: left;*/
+            border: 2px solid #666666;
+            background-color: #ccc;
+            -webkit-border-radius: 10px;
+            -ms-border-radius: 10px;
+            -moz-border-radius: 10px;
+            border-radius: 10px;
+            -webkit-box-shadow: inset 0 0 3px #000;
+            -ms-box-shadow: inset 0 0 3px #000;
+            box-shadow: inset 0 0 3px #000;
+            text-align: center;
+            cursor: move;
+        }
+        
+        /*li:nth-child(2n+1) {
+            height: 140px
+        }
+        
+        li:nth-child(2n) {
+            height: 180px
+        }
+        
+        li:nth-child(3n+1) {
+            height: 100px
+        }*/
+        
+        ul {
+            width: 1340px;
+            position: relative;
+            list-style: none;
+            padding: 0;
+            margin: 0 auto
+        }
+    </style>
+<script type="text/javascript" src="https://gc.kis.v2.scr.kaspersky-labs.com/2AD389B9-1338-C144-A7D7-E45A3D873F5F/main.js" charset="UTF-8"></script><link rel="stylesheet" crossorigin="anonymous" href="https://gc.kis.v2.scr.kaspersky-labs.com/F5F378D3A54E-7D7A-441C-8331-9B983DA2/abn/main.css"/></head>
+
+<body>
+    <ul id="columns">
+        <li draggable="true" style="height: 100px">Apples 1</li>
+        <li draggable="true" style="height: 140px">Oranges 2</li>
+        <li draggable="true" style="height: 100px">Bananas 3</li>
+        <li draggable="true" style="height: 140px">Strawberries 4</li>
+        <li draggable="true" style="height: 180px">Apples 5</li>
+        <li draggable="true" style="height: 100px">Oranges 6</li>
+        <li draggable="true" style="height: 140px">Bananas 7</li>
+        <li draggable="true" style="height: 180px">Strawberries 8</li>
+        <li draggable="true" style="height: 100px">Apples 9</li>
+        <li draggable="true" style="height: 100px">Oranges 10</li>
+        <li draggable="true" style="height: 180px">Bananas 11</li>
+        <li draggable="true" style="height: 140px">Strawberries 12</li>
+        <li draggable="true" style="height: 180px">Apples 13</li>
+        <li draggable="true" style="height: 100px">Oranges 14</li>
+        <li draggable="true" style="height: 180px">Bananas 15</li>
+        <li draggable="true" style="height: 100px">Strawberries 16</li>
+        <li draggable="true" style="height: 140px">Apples 17</li>
+        <li draggable="true" style="height: 100px">Oranges 18</li>
+        <li draggable="true" style="height: 140px">Bananas 19</li>
+        <li draggable="true" style="height: 100px">Strawberries 20</li>
+        <li draggable="true" style="height: 180px">Apples 21</li>
+        <li draggable="true" style="height: 100px">Oranges 22</li>
+        <li draggable="true" style="height: 140px">Bananas 23</li>
+        <li draggable="true" style="height: 100px">Strawberries 24</li>
+    </ul>
+    <script type="text/javascript">
+        /*global window,$,document,alert,console */
+        var source,
+            cols = document.querySelectorAll('#columns li');
+
+        function isbefore(a, b) {
+            if (a.parentNode == b.parentNode) {
+                for (var cur = a; cur; cur = cur.previousSibling) {
+                    if (cur === b) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        function thisindex(elm) {
+            var nodes = elm.parentNode.childNodes,
+                node,
+                i = 0,
+                indexVal = 1;
+            while( (node=nodes.item(i++)) && node!=elm )
+                if( node.nodeType==1 ) indexVal++;
+            return indexVal;
+        }
+
+        function handleDragEnter(e) {
+            var indexVal = thisindex(source),
+                cols = 7;
+            if (isbefore(source, e.target)) {
+                e.target.parentNode.insertBefore(source, e.target);
+            }
+            else {
+                e.target.parentNode.insertBefore(source, e.target.nextSibling);
+            }
+            
+            if(indexVal % cols === 0){
+                source.style.left = e.target.offsetLeft + 'px';
+            } else {
+                e.target.style.left = '0px';                
+                source.style.top = e.target.offsetTop + 'px';
+            }
+            
+            if(indexVal === 1) {
+                e.target.style.left = '0px';
+            } else {
+                source.style.left = e.target.offsetLeft + 'px';
+            }
+            refresh();
+            renderGrid();
+            
+            //thisindex(source);
+        }
+
+        function handleDragStart(e) {
+            source = e.target;
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleDrop(e) {
+            // this/e.target is current target element.
+            if (e.stopPropagation) {
+                e.stopPropagation(); // Stops some browsers from redirecting.
+            }
+            return false;
+        }
+        [].forEach.call(cols, function (col) {
+            col.addEventListener('dragstart', handleDragStart, false);
+            col.addEventListener('dragenter', handleDragEnter, false);
+            col.addEventListener('drop', handleDrop, false);
+            /*col.addEventListener('dragover', handleDragOver, false);            
+            col.addEventListener('drop', handleDrop, false);*/
+        });
+        // Refreshes the top and left property of all the elements.
+        function refresh(){
+            var blocks = document.getElementById("columns").children;
+            for (var i = 0; i < blocks.length; i++) {
+                blocks[i].style.top = "";
+                blocks[i].style.left = "";
+            }
+        }
+        function renderGrid() {
+            var blocks = document.getElementById("columns").children, pad = 25, cols = 7, newleft, newtop;
+            for (var i = 1; i < blocks.length; i++) {
+                if (i % cols === 0) {
+                    newtop = (blocks[i - cols].offsetTop + blocks[i - cols].offsetHeight) + pad;
+                    blocks[i].style.left = "0px";
+                    blocks[i].style.top = newtop + "px";
+                }
+                else {
+                    if (blocks[i - cols]) {
+                        newtop = (blocks[i - cols].offsetTop + blocks[i - cols].offsetHeight) + pad;
+                        blocks[i].style.top = newtop + "px";
+                    } else {
+                        blocks[i].style.top = "0px";
+                    }
+                    newleft = (blocks[i - 1].offsetLeft + blocks[i - 1].offsetWidth) + pad;
+                    blocks[i].style.left = newleft + "px";
+                }                
+            }
+        }
+        window.addEventListener("load", renderGrid, false);
+        window.addEventListener("resize", renderGrid, false);
+    </script>
+</body>
+
+</html>
